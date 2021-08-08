@@ -11,24 +11,24 @@ extra-source-files:
   - README.md
   - package.yaml
   - stack.yaml
+  - stack.yaml.lock
 
 # Metadata used when publishing your package
-synopsis: Short description of your package
+synopsis: A checksummed variation on Twitter's Snowflake UID generation algorithm
 category: Data
 
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description: Please see ./README.md
+description: See the file ./README.md, which is included in the package and also on GitHub.
 
 dependencies:
-  - base
-  - bytestring
-  - wide-word
-  - data-default
-  - extra
-  - time
-  - deepseq
+  - base >= 4.14.1.0 && < 4.15
+  - bytestring >= 0.10.12.0
+  - wide-word >= 0.1.1.2
+  - data-default >= 0.7.1.1
+  - time >= 1.9.3
+  - deepseq >= 1.4.4.0
 
 ghc-options:
   - -Wall
@@ -47,6 +47,7 @@ ghc-options:
   - -Werror=warnings-deprecations
   - -Wnoncanonical-monad-instances
   - -Wno-type-defaults
+  - -Wno-tabs
   - -feager-blackholing
   - -fexcess-precision
   - -flate-dmd-anal
@@ -70,7 +71,7 @@ tests:
     source-dirs: test
     dependencies:
       - snowchecked
-      - hspec
+      - hedgehog
 
     ghc-options:
       - -threaded
