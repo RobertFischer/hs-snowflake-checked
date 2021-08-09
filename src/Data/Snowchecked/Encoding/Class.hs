@@ -4,8 +4,7 @@ module Data.Snowchecked.Encoding.Class ( IsFlake(..), Flakeish(..), goodFish ) w
 
 import           Data.Snowchecked.Internal.Import
 
-{-| Something that might be a 'Flake'.  The fields might not be truncated
- - to the appropriate size.
+{-| Something that might be a 'Flake'.  The fields might not be truncated to the appropriate size.
  -}
 data Flakeish = Flakeish
 	{ fishNodeId    ::  Word256

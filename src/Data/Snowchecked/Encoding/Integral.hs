@@ -3,11 +3,11 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans      #-}
 {-|
- - This module provides a generalized conversion function between a
- - 'Flake' and all members of the typeclass 'Integral'.  It is specialized
- - for the 'Integer', 'Word32', and 'Word64' types. It is marked as
- - incoherent due to the constraint being no smaller than the instance type,
- - so it is undecidable.
+ This module provides a generalized conversion function between a
+ 'Flake' and all members of the typeclass 'Integral'.  It is specialized
+ for the 'Integer', 'Word32', and 'Word64' types. It is marked as
+ incoherent due to the constraint being no smaller than the instance type,
+ so it is undecidable.
 -}
 
 module Data.Snowchecked.Encoding.Integral

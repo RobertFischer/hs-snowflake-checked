@@ -2,10 +2,10 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -Wno-orphans      #-}
 {-|
- - This module provides a conversion function between a
- - 'Flake' and a strict 'ByteString'.  The 'ByteString'
- - is the series of bytes that make up the 'Flake', with
- - the lower bytes being in the lower indecies.
+ This module provides a conversion function between a
+ 'Flake' and a strict 'ByteString'.  The 'ByteString'
+ is the series of bytes that make up the 'Flake', with
+ the lower bytes being in the lower indecies.
 -}
 
 module Data.Snowchecked.Encoding.ByteString
