@@ -1,5 +1,5 @@
 name: snowchecked
-version: 0.0.0.1
+version: 0.0.0.3
 github: robertfischer/hs-snowflake-checked
 license: Apache-2.0
 author: Robert Fischer

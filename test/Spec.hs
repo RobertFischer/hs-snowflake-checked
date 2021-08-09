@@ -8,10 +8,15 @@ import           Data.List              (nub)
 import           Data.Snowchecked
 import           Data.WideWord.Word256
 import           Data.Word
+import           Gens
 import           Hedgehog
 import qualified Hedgehog.Gen           as Gen
 import           Hedgehog.Main          (defaultMain)
 import qualified Hedgehog.Range         as Range
+
+import qualified Integer
+import qualified Word32
+import qualified Word64
 
 main :: IO ()
 main = do
@@ -19,28 +24,12 @@ main = do
 		recheck (Size 8) (Seed 11763301661976410488 14055395789257366631) prop_generatesUniqueValues
 		recheck (Size 14) (Seed 6771904241892528611 8532317410904456029) prop_generatesUniqueValues
 		recheck (Size 14) (Seed 4790609826115340731 8375105224114527375) prop_generatesUniqueValues
-		defaultMain [ checkParallel $$(discover) ]
-
-genWord8 :: (MonadGen m) => m Word8
-genWord8 = Gen.word8 $ Range.linear (minBound @Word8) (maxBound @Word8)
-
-genWord256 :: (MonadGen m) => m Word256
-genWord256 = Gen.integral $ Range.linear (minBound @Word256) (maxBound @Word256)
-
-genConfig :: (MonadGen m) => m SnowcheckedConfig
-genConfig = SnowcheckedConfig
-		<$> Gen.integral (Range.linear 2 (maxBound @Word8))
-		<*> Gen.integral (Range.linear 2 (maxBound @Word8))
-		<*> Gen.integral (Range.linear 2 (maxBound @Word8))
-		<*> Gen.integral (Range.linear 2 (maxBound @Word8))
-
-forAllFlake :: (MonadIO m) => PropertyT m Flake
-forAllFlake = forAll genConfig >>= forAllFlake'
-
-forAllFlake' :: (MonadIO m) => SnowcheckedConfig -> PropertyT m Flake
-forAllFlake' cfg = do
-	nodeId <- forAll genWord256
-	newSnowcheckedGen cfg nodeId >>= nextFlake
+		defaultMain
+			[ checkParallel $$(discover)
+			, Integer.tests
+			, Word32.tests
+			, Word64.tests
+			]
 
 prop_generatesUniqueValues :: Property
 prop_generatesUniqueValues = property $ do
@@ -51,13 +40,6 @@ prop_generatesUniqueValues = property $ do
 	flakeGen <- newSnowcheckedGen cfg nodeId
 	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
 	resultLst === nub resultLst
-
-prop_roundTripIntegral :: Property
-prop_roundTripIntegral = property $ do
-	cfg <- forAll genConfig
-	flake <- forAllFlake' cfg
-	result <- parseFlake cfg $ flakeToIntegral @Integer flake
-	flake === result
 
 prop_flakeCanBeNFed :: Property
 prop_flakeCanBeNFed = property $ do
