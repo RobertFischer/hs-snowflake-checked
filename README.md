@@ -9,7 +9,8 @@ This library extends the Snowflake format by adding checksum bits at the end. If
 the number of checksum bits set to 0, then you have a Snowflake implementation.
 
 This extension is valuable because the checksum detects error on input. If you're using ids in a human setting
-(eg: having users type them in), then the checksum is valuable to catch typos, miscommunications, and other input issues.
+(eg: having users type them in or scan them from QR codes), then the checksum is valuable to catch typos,
+miscommunications, and other input issues.
 
 Like Snowflake, this algorithm uses some bits from the timestamp, some bits from a counter, and some bits of the node id.
 This algorithm extends Snowflake by also using some bits to store the checksum, which derives from the sum of the other
@@ -18,8 +19,8 @@ parts.
 This implementation allows the number of bits in the id to range from 0 bits to 255^4 bits. The default configuration uses
 64 bits, with 40 bits used for time, 10 bits used for the counter, 8 bits used for the node id, and 6 bits for the checksum.
 The odds of a false positive on the checksum is `1/(2^checkbits)`, so the odds of a false positive in the default configuration
-is ~1.5%. This configuration can generate 1024 UIDs per millisecond per node: the 1025th request to a node for a UID in that
-millisecond will cause a pause in the thread for one millisecond, and then the counter will reset to 0. (If you need more UIDs
+is ~1.5%. This configuration can generate 1024 UIDs per millisecond per node: the 1025th request in a given millisecond
+will cause a pause in the thread for one millisecond, and then the counter will reset to 0. (If you need more UID throughput
 than that, then create more generators with distinct node ids.)
 
 # Credit
