@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           snowchecked
-version:        0.0.0.3
+version:        0.0.1.0
 synopsis:       A checksummed variation on Twitter's Snowflake UID generation algorithm
 description:    See the file ./README.md, which is included in the package and also on GitHub.
 category:       Data
@@ -35,6 +35,7 @@ library
       Data.Snowchecked.Encoding.ByteString.Lazy
       Data.Snowchecked.Encoding.Class
       Data.Snowchecked.Encoding.Integral
+      Data.Snowchecked.Encoding.Text
       Data.Snowchecked.Internal.Import
       Data.Snowchecked.Types
   other-modules:
@@ -47,6 +48,8 @@ library
     , bytestring >=0.10.12.0
     , data-default >=0.7.1.1
     , deepseq >=1.4.4.0
+    , text >=1.2.4.1
+    , text-conversions >=0.3.1
     , time >=1.9.3
     , wide-word >=0.1.1.2
   default-language: Haskell2010
@@ -57,6 +60,8 @@ test-suite test-suite
   other-modules:
       Gens
       Integer
+      String
+      Text
       Word32
       Word64
       Paths_snowchecked
@@ -70,6 +75,8 @@ test-suite test-suite
     , deepseq >=1.4.4.0
     , hedgehog
     , snowchecked
+    , text >=1.2.4.1
+    , text-conversions >=0.3.1
     , time >=1.9.3
     , wide-word >=0.1.1.2
   default-language: Haskell2010

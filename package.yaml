@@ -1,5 +1,5 @@
 name: snowchecked
-version: 0.0.0.3
+version: 0.0.1.0
 github: robertfischer/hs-snowflake-checked
 license: Apache-2.0
 author: Robert Fischer
@@ -29,6 +29,8 @@ dependencies:
   - data-default >= 0.7.1.1
   - time >= 1.9.3
   - deepseq >= 1.4.4.0
+  - text-conversions >= 0.3.1
+  - text >= 1.2.4.1
 
 ghc-options:
   - -Wall
