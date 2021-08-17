@@ -12,6 +12,10 @@
  To specify how you want the conversion to be performed, you need to wrap the
  text-like type the 'Base16' constructor.  Other encodings (eg: Base64) may
  be added later.
+
+ Note that when converting to a 'Flake', the implementation silently discards
+ characters other than digits, 'a'-'f', and 'A'-'F'.  This allows you to
+ apply formatting to the Flake.
 -}
 
 module Data.Snowchecked.Encoding.Text

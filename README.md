@@ -23,6 +23,11 @@ is ~1.5%. This configuration can generate 1024 UIDs per millisecond per node: th
 will cause a pause in the thread for one millisecond, and then the counter will reset to 0. (If you need more UID throughput
 than that, then create more generators with distinct node ids.)
 
+## Encoding
+
+If you want to marshall a flake, then you can use the encodings in the `Encoding` sub-packages of this library. Implementations
+include a `ByteString` (strict or lazy), any `Text`-like value (using base 16), or any `Integral` value.
+
 # Credit
 
 This project derives distantly from the [`snowfake` package on Hackage](https://hackage.haskell.org/package/snowflake).
