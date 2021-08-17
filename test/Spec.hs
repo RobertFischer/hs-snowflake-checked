@@ -15,10 +15,10 @@ import           Hedgehog.Main          (defaultMain)
 import qualified Hedgehog.Range         as Range
 
 import qualified Integer
+import qualified String
+import qualified Text
 import qualified Word32
 import qualified Word64
-import qualified Text
-import qualified String
 
 main :: IO ()
 main = do
@@ -49,3 +49,25 @@ prop_flakeCanBeNFed :: Property
 prop_flakeCanBeNFed = property $ do
 	flake <- forAllFlake
 	void $ evalNF flake
+
+prop_generatesUniqueValuesWithZeroCheckBits :: Property
+prop_generatesUniqueValuesWithZeroCheckBits = property $ do
+	lst <- forAll $ Gen.list (Range.linear 2 1024) (return ())
+	cfgBase <- forAll genConfig
+	let cfg = cfgBase { confCheckBits = 0 }
+	unless ( uniqueFlakeCount cfg > toInteger (length lst) ) discard
+	nodeId <- forAll genWord256
+	flakeGen <- newSnowcheckedGen cfg nodeId
+	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
+	resultLst === nub resultLst
+
+prop_generatesUniqueValuesWithZeroNodeIdBits :: Property
+prop_generatesUniqueValuesWithZeroNodeIdBits = property $ do
+	lst <- forAll $ Gen.list (Range.linear 2 1024) (return ())
+	cfgBase <- forAll genConfig
+	let cfg = cfgBase { confNodeBits = 0 }
+	unless ( uniqueFlakeCount cfg > toInteger (length lst) ) discard
+	nodeId <- forAll genWord256
+	flakeGen <- newSnowcheckedGen cfg nodeId
+	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
+	resultLst === nub resultLst
