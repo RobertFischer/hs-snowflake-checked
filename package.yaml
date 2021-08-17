@@ -33,39 +33,40 @@ dependencies:
   - text >= 1.2.4.1
 
 ghc-options:
-  - -Wall
-  - -Wcompat
-  - -Widentities
-  - -Werror=unused-do-bind
-  - -Werror=incomplete-record-updates
-  - -Werror=incomplete-uni-patterns
-  - -Werror=partial-fields
-  - -Werror=incomplete-patterns
-  - -Wredundant-constraints
-  - -Werror=missing-exported-signatures
-  - -Wmissed-specializations
-  - -Wno-unused-packages
-  - -Wunused-type-patterns
-  - -Werror=warnings-deprecations
-  - -Wnoncanonical-monad-instances
-  - -Wno-type-defaults
   - -Wno-tabs
-  - -feager-blackholing
-  - -fexcess-precision
-  - -flate-dmd-anal
-  - -fmax-inline-alloc-size=1024
-  - -fmax-simplifier-iterations=8
-  - -fpedantic-bottoms
-  - -fregs-iterative
-  - -fsimplifier-phases=4
-  - -fspec-constr-count=10
-  - -fspecialise-aggressively
-  - -flate-specialise
-  - -fstatic-argument-transformation
-  - -fstrictness-before=3
 
 library:
   source-dirs: src
+  ghc-options:
+    - -Wall
+    - -Wcompat
+    - -Wno-type-defaults
+    - -Wno-tabs
+    - -Widentities
+    - -Werror=unused-do-bind
+    - -Werror=incomplete-record-updates
+    - -Werror=incomplete-uni-patterns
+    - -Werror=partial-fields
+    - -Werror=incomplete-patterns
+    - -Wredundant-constraints
+    - -Werror=missing-exported-signatures
+    - -Wmissed-specializations
+    - -Wunused-type-patterns
+    - -Werror=warnings-deprecations
+    - -Wnoncanonical-monad-instances
+    - -feager-blackholing
+    - -fexcess-precision
+    - -flate-dmd-anal
+    - -fmax-inline-alloc-size=1024
+    - -fmax-simplifier-iterations=8
+    - -fpedantic-bottoms
+    - -fregs-iterative
+    - -fsimplifier-phases=4
+    - -fspec-constr-count=10
+    - -fspecialise-aggressively
+    - -flate-specialise
+    - -fstatic-argument-transformation
+    - -fstrictness-before=3
 
 tests:
   test-suite:
