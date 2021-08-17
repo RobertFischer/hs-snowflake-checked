@@ -17,6 +17,8 @@ import qualified Hedgehog.Range         as Range
 import qualified Integer
 import qualified Word32
 import qualified Word64
+import qualified Text
+import qualified String
 
 main :: IO ()
 main = do
@@ -29,6 +31,8 @@ main = do
 			, Integer.tests
 			, Word32.tests
 			, Word64.tests
+			, Text.tests
+			, String.tests
 			]
 
 prop_generatesUniqueValues :: Property
