@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           snowchecked
-version:        0.0.1.1
+version:        0.0.1.2
 synopsis:       A checksummed variation on Twitter's Snowflake UID generation algorithm
 description:    See the file ./README.md, which is included in the package and also on GitHub.
 category:       Data

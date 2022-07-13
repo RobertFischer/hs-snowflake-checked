@@ -36,7 +36,7 @@ data SnowcheckedConfig = SnowcheckedConfig
 	, confCountBits        :: Word8  -- ^ Number of bits used to count instances per-time
 	, confNodeBits         :: Word8  -- ^ Number of bits derived from the node id
 	, confCheckBits        :: Word8  -- ^ Number of bits used to store the checksum
-	} deriving (Eq, Show, Generic)
+	} deriving (Eq, Show, Generic, Ord)
 
 instance NFData SnowcheckedConfig
 
@@ -65,6 +65,6 @@ data Flake = Flake
 	, flakeCount         :: Word256 -- ^ The bit-truncated count
 	, flakeNodeId        :: Word256 -- ^ The bit-truncated node id
 	, flakeConfig        :: SnowcheckedConfig -- ^ The configuration used to create the flake.
- } deriving (Eq,Show,Generic)
+ } deriving (Eq,Show,Ord,Generic)
 
 instance NFData Flake
