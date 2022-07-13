@@ -1,5 +1,5 @@
 name: snowchecked
-version: 0.0.1.0
+version: 0.0.1.1
 github: robertfischer/hs-snowflake-checked
 license: Apache-2.0
 author: Robert Fischer
@@ -23,7 +23,7 @@ category: Data
 description: See the file ./README.md, which is included in the package and also on GitHub.
 
 dependencies:
-  - base >= 4.14.1.0 && < 4.15
+  - base >= 4.14.1.0 && < 5
   - bytestring >= 0.10.12.0
   - wide-word >= 0.1.1.2
   - data-default >= 0.7.1.1

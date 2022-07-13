@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           snowchecked
-version:        0.0.1.0
+version:        0.0.1.1
 synopsis:       A checksummed variation on Twitter's Snowflake UID generation algorithm
 description:    See the file ./README.md, which is included in the package and also on GitHub.
 category:       Data
@@ -44,7 +44,7 @@ library
       src
   ghc-options: -Wno-tabs -Wall -Wcompat -Wno-type-defaults -Wno-tabs -Widentities -Werror=unused-do-bind -Werror=incomplete-record-updates -Werror=incomplete-uni-patterns -Werror=partial-fields -Werror=incomplete-patterns -Wredundant-constraints -Werror=missing-exported-signatures -Wmissed-specializations -Wunused-type-patterns -Werror=warnings-deprecations -Wnoncanonical-monad-instances -feager-blackholing -fexcess-precision -flate-dmd-anal -fmax-inline-alloc-size=1024 -fmax-simplifier-iterations=8 -fpedantic-bottoms -fregs-iterative -fsimplifier-phases=4 -fspec-constr-count=10 -fspecialise-aggressively -flate-specialise -fstatic-argument-transformation -fstrictness-before=3
   build-depends:
-      base >=4.14.1.0 && <4.15
+      base >=4.14.1.0 && <5
     , bytestring >=0.10.12.0
     , data-default >=0.7.1.1
     , deepseq >=1.4.4.0
@@ -69,7 +69,7 @@ test-suite test-suite
       test
   ghc-options: -Wno-tabs -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.14.1.0 && <4.15
+      base >=4.14.1.0 && <5
     , bytestring >=0.10.12.0
     , data-default >=0.7.1.1
     , deepseq >=1.4.4.0

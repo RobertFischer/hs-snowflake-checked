@@ -55,6 +55,7 @@ c 13 = 'd'
 c 14 = 'e'
 c 15 = 'f'
 c _  = '\0'
+{-# INLINE c #-}
 
 -- | Converts a character to a hex value (if there is one).
 b :: Char -> Maybe Word8
@@ -74,6 +75,7 @@ b ch = readMaybe [ch] <|> chLookup
 			'F' -> Just 15
 			'f' -> Just 15
 			_   -> Nothing
+{-# INLINE b #-}
 
 -- | Converts a byte to two hex characters: low nibble and then high nibble.
 byteToHex :: Word8 -> (Char,Char)
@@ -81,6 +83,7 @@ byteToHex w8 = (c lowNibble, c highNibble)
 	where
 		lowNibble = cutBits w8 4
 		highNibble = shiftCutBits w8 4 4
+{-# INLINE byteToHex #-}
 
 instance {-# INCOHERENT #-} (ToText a, FromText a) => IsFlake (Base16 a) where
 	fromFlake flake = Base16 $ convertText str
