@@ -25,6 +25,7 @@ import           Control.Concurrent.MVar
 import           Control.Monad.IO.Class           (MonadIO, liftIO)
 import           Data.Snowchecked.Internal.Import
 import           Data.Time.Clock.POSIX            (getPOSIXTime)
+import GHC.Stack (HasCallStack)
 
 
 currentTimestamp :: IO Word256
@@ -34,19 +35,19 @@ currentTimestamp = toMillisWord256 <$> getPOSIXTime
 {-# INLINE currentTimestamp #-}
 
 currentTimestampBits :: Word8 -> IO Word256
-currentTimestampBits n = (`cutBits` fromIntegral n) <$> currentTimestamp
+currentTimestampBits n = (`cutBits` toInt n) <$> currentTimestamp
 {-# INLINE currentTimestampBits #-}
 
 -- | Create a new generator. Takes a configuration and node id.  The node id may be any
 -- value that fits in a 'Word256', but it will be truncated to the number of bits specified
 -- in the provided configuration.
-newSnowcheckedGen :: (MonadIO io) => SnowcheckedConfig -> Word256 -> io SnowcheckedGen
+newSnowcheckedGen :: (HasCallStack, MonadIO io) => SnowcheckedConfig -> Word256 -> io SnowcheckedGen
 newSnowcheckedGen conf@SnowcheckedConfig{..} nodeId = liftIO $ do
 	startTimeBits <- currentTimestampBits confTimeBits
 	SnowcheckedGen <$> newMVar Flake
 		{ flakeTime = startTimeBits
 		, flakeCount = maxBound
-		, flakeNodeId = cutBits nodeId confNodeBits
+		, flakeNodeId = cutBits nodeId (toInt confNodeBits)
 		, flakeConfig = conf
 		}
 {-# INLINEABLE newSnowcheckedGen #-}
@@ -68,7 +69,7 @@ snowcheckedConfigBitCount SnowcheckedConfig{..} = foldr foldFunc 0
 {-# INLINEABLE snowcheckedConfigBitCount #-}
 
 -- | Generates the next id.
-nextFlake :: (MonadIO io) => SnowcheckedGen -> io Flake
+nextFlake :: (HasCallStack, MonadIO io) => SnowcheckedGen -> io Flake
 nextFlake SnowcheckedGen{..} = liftIO $ modifyMVar genLastFlake mkNextFlake
 	where
 		-- TODO: Special case when confTimeBits is 0.
@@ -85,7 +86,7 @@ nextFlake SnowcheckedGen{..} = liftIO $ modifyMVar genLastFlake mkNextFlake
 				else if confCountBits == 0 then
 					threadDelay 1000 >> mkNextFlake flake
 				else
-					let nextCount = cutBits (flakeCount + 1) confCountBits in
+					let nextCount = cutBits (flakeCount + 1) (toInt confCountBits) in
 					if flakeCount < nextCount then
 						let newFlake = flake { flakeCount = nextCount }
 						in return (newFlake, newFlake)

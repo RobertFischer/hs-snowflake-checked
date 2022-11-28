@@ -16,12 +16,12 @@ data Flakeish = Flakeish
 {-| Is this 'Flakeish' valid under the given 'SnowcheckedConfig' settings? -}
 goodFish :: SnowcheckedConfig -> Flakeish -> Bool
 goodFish SnowcheckedConfig{..} Flakeish{..} =
-		checkInteger == cutBits (nodeInteger + countInteger + timeInteger) confCheckBits
+		checkInteger == cutBits (nodeInteger + countInteger + timeInteger) (toInt confCheckBits)
 	where
-		checkInteger = cutBits fishCheck confCheckBits
-		nodeInteger = cutBits fishNodeId confNodeBits
-		countInteger = cutBits fishCount confCountBits
-		timeInteger = cutBits fishTime confTimeBits
+		checkInteger = cutBits fishCheck (toInt confCheckBits)
+		nodeInteger = cutBits fishNodeId (toInt confNodeBits)
+		countInteger = cutBits fishCount (toInt confCountBits)
+		timeInteger = cutBits fishTime (toInt confTimeBits)
 {-# INLINEABLE goodFish #-}
 
 {-| The class of things that can be generated from and to a 'Flake'.
@@ -33,9 +33,9 @@ class IsFlake a where
 	parseFlake cfg@SnowcheckedConfig{..} a = parseFish cfg a >>= \fish@Flakeish{..} ->
 		if goodFish cfg fish then
 			return $ Flake
-				{ flakeTime = cutBits fishTime confTimeBits
-				, flakeCount = cutBits fishCount confCountBits
-				, flakeNodeId = cutBits fishNodeId confNodeBits
+				{ flakeTime = cutBits fishTime (toInt confTimeBits)
+				, flakeCount = cutBits fishCount (toInt confCountBits)
+				, flakeNodeId = cutBits fishNodeId (toInt confNodeBits)
 				, flakeConfig = cfg
 				}
 		else

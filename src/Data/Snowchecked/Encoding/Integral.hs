@@ -19,16 +19,16 @@ import           Data.Snowchecked.Internal.Import
 
 instance {-# INCOHERENT #-} (Integral a) => IsFlake a where
 	fromFlake Flake{..} = fromInteger
-			$   cutBits checkInteger checkBitsInteger
-			.|. cutShiftBits nodeIdInteger nodeBitsInteger checkBitsInteger
-			.|. cutShiftBits countInteger countBitsInteger (checkBitsInteger + nodeBitsInteger)
-			.|. cutShiftBits timeInteger timeBitsInteger (checkBitsInteger + nodeBitsInteger + countBitsInteger)
+			$   cutBits checkInteger checkBitsInt
+			.|. cutShiftBits nodeIdInteger nodeBitsInt checkBitsInt
+			.|. cutShiftBits countInteger countBitsInt (checkBitsInt + nodeBitsInt)
+			.|. cutShiftBits timeInteger timeBitsInt (checkBitsInt + nodeBitsInt + countBitsInt)
 		where
 			SnowcheckedConfig{..} = flakeConfig
-			checkBitsInteger = toInteger confCheckBits
-			nodeBitsInteger = toInteger confNodeBits
-			timeBitsInteger = toInteger confTimeBits
-			countBitsInteger = toInteger confCountBits
+			checkBitsInt = toInt confCheckBits
+			nodeBitsInt = toInt confNodeBits
+			timeBitsInt = toInt confTimeBits
+			countBitsInt = toInt confCountBits
 			nodeIdInteger = toInteger flakeNodeId
 			timeInteger = toInteger flakeTime
 			countInteger = toInteger flakeCount
@@ -36,15 +36,15 @@ instance {-# INCOHERENT #-} (Integral a) => IsFlake a where
 	{-# INLINEABLE fromFlake #-}
 
 	parseFish SnowcheckedConfig{..} i = return $ Flakeish
-			{ fishCheck = fromIntegral $ cutBits n checkBitsInteger
-			, fishNodeId = fromIntegral $ shiftCutBits n checkBitsInteger nodeBitsInteger
-			, fishCount = fromIntegral $ shiftCutBits n (checkBitsInteger + nodeBitsInteger) countBitsInteger
-			, fishTime = fromIntegral $ shiftCutBits n (checkBitsInteger + nodeBitsInteger + countBitsInteger) timeBitsInteger
+			{ fishCheck = fromIntegral $ cutBits n checkBitsInt
+			, fishNodeId = fromIntegral $ shiftCutBits n checkBitsInt nodeBitsInt
+			, fishCount = fromIntegral $ shiftCutBits n (checkBitsInt + nodeBitsInt) countBitsInt
+			, fishTime = fromIntegral $ shiftCutBits n (checkBitsInt + nodeBitsInt + countBitsInt) timeBitsInt
 			}
 		where
 			n = toInteger i
-			checkBitsInteger = toInteger confCheckBits
-			nodeBitsInteger = toInteger confNodeBits
-			timeBitsInteger = toInteger confTimeBits
-			countBitsInteger = toInteger confCountBits
+			checkBitsInt = toInt confCheckBits
+			nodeBitsInt = toInt confNodeBits
+			timeBitsInt = toInt confTimeBits
+			countBitsInt = toInt confCountBits
 	{-# INLINE parseFish #-}

@@ -96,20 +96,20 @@ instance {-# INCOHERENT #-} (ToText a, FromText a) => IsFlake (Base16 a) where
 	{-# SPECIALIZE fromFlake :: Flake -> Base16 T.Text #-}
 
 	parseFish SnowcheckedConfig{..} (Base16 raw) = return $ Flakeish
-			{ fishCheck = fromIntegral $ cutBits n checkBitsInteger
-			, fishNodeId = fromIntegral $ shiftCutBits n checkBitsInteger nodeBitsInteger
-			, fishCount = fromIntegral $ shiftCutBits n (checkBitsInteger + nodeBitsInteger) countBitsInteger
-			, fishTime = fromIntegral $ shiftCutBits n (checkBitsInteger + nodeBitsInteger + countBitsInteger) timeBitsInteger
+			{ fishCheck = fromIntegral $ cutBits n checkBitsInt
+			, fishNodeId = fromIntegral $ shiftCutBits n checkBitsInt nodeBitsInt
+			, fishCount = fromIntegral $ shiftCutBits n (checkBitsInt + nodeBitsInt) countBitsInt
+			, fishTime = fromIntegral $ shiftCutBits n (checkBitsInt + nodeBitsInt + countBitsInt) timeBitsInt
 			}
 		where
 			nibbles = catMaybes . T.foldr toNibbles [] $ toText raw
 			n = L.foldr addNibbles 0 nibbles
 			addNibbles nib total = toInteger nib + ( total `shiftL` 4 )
 			toNibbles ch lst = b ch : lst
-			checkBitsInteger = toInteger confCheckBits
-			nodeBitsInteger = toInteger confNodeBits
-			timeBitsInteger = toInteger confTimeBits
-			countBitsInteger = toInteger confCountBits
+			checkBitsInt = toInt confCheckBits
+			nodeBitsInt = toInt confNodeBits
+			timeBitsInt = toInt confTimeBits
+			countBitsInt = toInt confCountBits
 	{-# INLINEABLE parseFish #-}
 	{-# SPECIALIZE parseFish :: (MonadFail m) => SnowcheckedConfig -> Base16 T.Text -> m Flakeish #-}
 	{-# SPECIALIZE parseFish :: (MonadFail m) => SnowcheckedConfig -> Base16 String -> m Flakeish #-}
