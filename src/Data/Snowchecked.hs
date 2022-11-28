@@ -42,11 +42,10 @@ currentTimestampBits n = (`cutBits` toInt n) <$> currentTimestamp
 -- value that fits in a 'Word256', but it will be truncated to the number of bits specified
 -- in the provided configuration.
 newSnowcheckedGen :: (HasCallStack, MonadIO io) => SnowcheckedConfig -> Word256 -> io SnowcheckedGen
-newSnowcheckedGen conf@SnowcheckedConfig{..} nodeId = liftIO $ do
-	startTimeBits <- currentTimestampBits confTimeBits
+newSnowcheckedGen conf@SnowcheckedConfig{..} nodeId = liftIO $
 	SnowcheckedGen <$> newMVar Flake
-		{ flakeTime = startTimeBits
-		, flakeCount = maxBound
+		{ flakeTime = 0
+		, flakeCount = 0
 		, flakeNodeId = cutBits nodeId (toInt confNodeBits)
 		, flakeConfig = conf
 		}
@@ -65,7 +64,7 @@ snowcheckedConfigBitCount SnowcheckedConfig{..} = foldr foldFunc 0
 		]
 	where
 		foldFunc :: Word8 -> Word32 -> Word32
-		foldFunc nxt memo = memo + toWord32 nxt
+		foldFunc nxt = (+ toWord32 nxt)
 {-# INLINEABLE snowcheckedConfigBitCount #-}
 
 -- | Generates the next id.
