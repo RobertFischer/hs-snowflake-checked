@@ -20,12 +20,10 @@ module Data.Snowchecked
 , uniqueFlakeCount
 ) where
 
-import           Control.Concurrent               (threadDelay)
 import           Control.Concurrent.MVar
 import           Control.Monad.IO.Class           (MonadIO, liftIO)
 import           Data.Snowchecked.Internal.Import
 import           Data.Time.Clock.POSIX            (getPOSIXTime)
-import GHC.Stack (HasCallStack)
 
 
 currentTimestamp :: IO Word256
@@ -35,13 +33,17 @@ currentTimestamp = toMillisWord256 <$> getPOSIXTime
 {-# INLINE currentTimestamp #-}
 
 currentTimestampBits :: Word8 -> IO Word256
-currentTimestampBits n = (`cutBits` toInt n) <$> currentTimestamp
+currentTimestampBits n = 
+	if n == 0 then
+		return 0
+	else
+		(`cutBits` toInt n) <$> currentTimestamp
 {-# INLINE currentTimestampBits #-}
 
 -- | Create a new generator. Takes a configuration and node id.  The node id may be any
 -- value that fits in a 'Word256', but it will be truncated to the number of bits specified
 -- in the provided configuration.
-newSnowcheckedGen :: (HasCallStack, MonadIO io) => SnowcheckedConfig -> Word256 -> io SnowcheckedGen
+newSnowcheckedGen :: (MonadIO io) => SnowcheckedConfig -> Word256 -> io SnowcheckedGen
 newSnowcheckedGen conf@SnowcheckedConfig{..} nodeId = liftIO $
 	SnowcheckedGen <$> newMVar Flake
 		{ flakeTime = 0
@@ -68,31 +70,41 @@ snowcheckedConfigBitCount SnowcheckedConfig{..} = foldr foldFunc 0
 {-# INLINEABLE snowcheckedConfigBitCount #-}
 
 -- | Generates the next id.
-nextFlake :: (HasCallStack, MonadIO io) => SnowcheckedGen -> io Flake
+nextFlake :: (MonadIO io) => SnowcheckedGen -> io Flake
 nextFlake SnowcheckedGen{..} = liftIO $ modifyMVar genLastFlake mkNextFlake
 	where
-		-- TODO: Special case when confTimeBits is 0.
 		-- TODO: Track the number of flakes generated and error out if we've exhausted them.
 		mkNextFlake flake@Flake{..} =
 			let SnowcheckedConfig{..} = flakeConfig in
 			currentTimestampBits confTimeBits >>= \currentTimeBits ->
 				if flakeTime < currentTimeBits then
+					let newFlake = flake { 
+						flakeTime = currentTimeBits, 
+						flakeCount = 0 
+					} in return (newFlake, newFlake)
+				else if confTimeBits == 0 then
 					let newFlake = flake
-						{ flakeTime = currentTimeBits
-						, flakeCount = 0
+						{ flakeTime = 0
+						, flakeCount = flakeCount + 1
 						}
 					in return (newFlake, newFlake)
 				else if confCountBits == 0 then
-					threadDelay 1000 >> mkNextFlake flake
+					let newFlake = flake
+						{ flakeTime = flakeTime + 1
+						, flakeCount = 0
+						}
+					in return (newFlake, newFlake)
 				else
 					let nextCount = cutBits (flakeCount + 1) (toInt confCountBits) in
-					if flakeCount < nextCount then
-						let newFlake = flake { flakeCount = nextCount }
+					if nextCount == 0 then
+						let newFlake = flake
+							{ flakeTime = flakeTime + 1
+							, flakeCount = 0
+							}
 						in return (newFlake, newFlake)
 					else
-						-- The count wrapped and we need to wait for the time to change.
-						-- This assumes that the next millisecond will give us a new time.
-						threadDelay 1000 >> mkNextFlake flake
+						let newFlake = flake { flakeCount = nextCount }
+						in return (newFlake, newFlake)
 {-# INLINEABLE nextFlake #-}
 {-# SPECIALIZE nextFlake :: SnowcheckedGen -> IO Flake #-}
 

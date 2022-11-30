@@ -19,9 +19,7 @@ parts.
 This implementation allows the number of bits in the id to range from 0 bits to 255^4 bits. The default configuration uses
 64 bits, with 40 bits used for time, 10 bits used for the counter, 8 bits used for the node id, and 6 bits for the checksum.
 The odds of a false positive on the checksum is `1/(2^checkbits)`, so the odds of a false positive in the default configuration
-is ~1.5%. This configuration can generate 1024 UIDs per millisecond per node: the 1025th request in a given millisecond
-will cause a pause in the thread for one millisecond, and then the counter will reset to 0. (If you need more UID throughput
-than that, then create more generators with distinct node ids.)
+is ~1.5%. 
 
 ## Encoding
 

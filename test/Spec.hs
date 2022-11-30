@@ -1,11 +1,13 @@
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TemplateHaskell  #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import           Control.Monad          (unless, void)
 import           Control.Monad.IO.Class (MonadIO)
 import           Data.List              (nub)
 import           Data.Snowchecked
+import           Data.Snowchecked.Encoding.Integral
 import           Data.WideWord.Word256
 import           Data.Word
 import           Gens
@@ -21,53 +23,61 @@ import qualified Word32
 import qualified Word64
 
 main :: IO ()
-main = do
-		recheck (Size 4) (Seed 14462958355020818941 14776761114051845121) prop_generatesUniqueValues
-		recheck (Size 8) (Seed 11763301661976410488 14055395789257366631) prop_generatesUniqueValues
-		recheck (Size 14) (Seed 6771904241892528611 8532317410904456029) prop_generatesUniqueValues
-		recheck (Size 14) (Seed 4790609826115340731 8375105224114527375) prop_generatesUniqueValues
-		defaultMain
-			[ checkParallel $$(discover)
-			, Integer.tests
-			, Word32.tests
-			, Word64.tests
-			, Text.tests
-			, String.tests
-			]
+main =
+  defaultMain
+    [ checkParallel $$(discover)
+    , Integer.tests
+    , Word32.tests
+    , Word64.tests
+    , Text.tests
+    , String.tests
+    ]
+
+prop_confGenerationWorks :: Property
+prop_confGenerationWorks = property $
+  void (forAll genConfig)
+
+uniqueGenerationProperty :: (SnowcheckedConfig -> SnowcheckedConfig) -> Property
+uniqueGenerationProperty nudge = 
+  property $ do
+    cfg <- nudge <$> forAll genConfig
+    flakeGen <- forAll genWord256 >>= newSnowcheckedGen cfg
+    let flakeCount = min 4096 (fromIntegral $ uniqueFlakeCount cfg)
+    lst <- forAll $ Gen.list (Range.linear 2 flakeCount) (pure ())
+    resultLst <- mapM (const $ nextFlake flakeGen) lst
+    resultLst === nub resultLst
 
 prop_generatesUniqueValues :: Property
-prop_generatesUniqueValues = property $ do
-	lst <- forAll $ Gen.list (Range.linear 2 8192) (return ())
-	cfg <- forAll genConfig
-	unless ( uniqueFlakeCount cfg > toInteger (length lst) ) discard
-	nodeId <- forAll genWord256
-	flakeGen <- newSnowcheckedGen cfg nodeId
-	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
-	resultLst === nub resultLst
+prop_generatesUniqueValues = uniqueGenerationProperty id
 
 prop_flakeCanBeNFed :: Property
-prop_flakeCanBeNFed = property $ do
-	flake <- forAllFlake
-	void $ evalNF flake
+prop_flakeCanBeNFed = property $
+  forAllFlake >>= void . evalNF
 
 prop_generatesUniqueValuesWithZeroCheckBits :: Property
-prop_generatesUniqueValuesWithZeroCheckBits = property $ do
-	lst <- forAll $ Gen.list (Range.linear 2 1024) (return ())
-	cfgBase <- forAll genConfig
-	let cfg = cfgBase { confCheckBits = 0 }
-	unless ( uniqueFlakeCount cfg > toInteger (length lst) ) discard
-	nodeId <- forAll genWord256
-	flakeGen <- newSnowcheckedGen cfg nodeId
-	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
-	resultLst === nub resultLst
+prop_generatesUniqueValuesWithZeroCheckBits =
+  uniqueGenerationProperty (\cfg -> cfg { confCheckBits = 0 })
 
 prop_generatesUniqueValuesWithZeroNodeIdBits :: Property
-prop_generatesUniqueValuesWithZeroNodeIdBits = property $ do
-	lst <- forAll $ Gen.list (Range.linear 2 1024) (return ())
-	cfgBase <- forAll genConfig
-	let cfg = cfgBase { confNodeBits = 0 }
-	unless ( uniqueFlakeCount cfg > toInteger (length lst) ) discard
-	nodeId <- forAll genWord256
-	flakeGen <- newSnowcheckedGen cfg nodeId
-	resultLst <- mapM (\_ -> nextFlake flakeGen) lst
-	resultLst === nub resultLst
+prop_generatesUniqueValuesWithZeroNodeIdBits = 
+  uniqueGenerationProperty (\cfg -> cfg { confNodeBits = 0 })
+
+prop_generatesUniqueValuesWithZeroCountBits :: Property
+prop_generatesUniqueValuesWithZeroCountBits = 
+  uniqueGenerationProperty (\cfg -> cfg { confCountBits = 0 })
+
+prop_monotonicallyIncreasing :: Property
+prop_monotonicallyIncreasing = property $ do
+    cfg <- forAll genConfig
+    let flakeCount = min 1024 (fromIntegral $ uniqueFlakeCount cfg)
+    lst <- forAll $ Gen.list (Range.linear 2 flakeCount) (return ())
+    nodeId <- forAll genWord256
+    flakeGen <- newSnowcheckedGen cfg nodeId
+    resultLst <- mapM (\_ -> nextFlake flakeGen) lst
+    checkResults resultLst
+  where
+    checkResults [] = success
+    checkResults [_] = success
+    checkResults (a:b:rest) = do
+      diff a (<) b
+      checkResults (b:rest)

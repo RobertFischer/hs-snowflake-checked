@@ -14,17 +14,16 @@ import           Data.Snowchecked.Types
 import           Data.WideWord.Word256
 import           Data.Word
 import           Numeric
-import GHC.Stack (HasCallStack)
 
-cutBits :: (HasCallStack, Num a, Bits a) => a -> Int -> a
+cutBits :: (Num a, Bits a) => a -> Int -> a
 cutBits n bits = n .&. ((1 `shiftL` bits) - 1)
 {-# INLINE cutBits #-}
 
-cutShiftBits :: (HasCallStack, Num a, Bits a) => a -> Int -> Int -> a
+cutShiftBits :: (Num a, Bits a) => a -> Int -> Int -> a
 cutShiftBits n cutBitCount shiftBitCount = cutBits n cutBitCount `shiftL` shiftBitCount
 {-# INLINE cutShiftBits #-}
 
-shiftCutBits :: (HasCallStack, Num a, Bits a) => a -> Int -> Int -> a
+shiftCutBits :: (Num a, Bits a) => a -> Int -> Int -> a
 shiftCutBits n shiftBitCount = cutBits $ n `shiftR` shiftBitCount
 {-# INLINE shiftCutBits #-}
 
@@ -39,3 +38,4 @@ toWord8 = fromIntegral @_ @Word8
 toWord32 :: (Integral a) => a -> Word32
 toWord32 = fromIntegral @_ @Word32
 {-# INLINE toWord32 #-}
+

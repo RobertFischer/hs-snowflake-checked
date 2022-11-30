@@ -13,9 +13,7 @@ module Data.Snowchecked.Encoding.ByteString
 	) where
 
 import           Data.ByteString
-import           Data.ByteString.Lazy                      (fromStrict,
-                                                            toStrict)
-import           Data.Snowchecked.Encoding.ByteString.Lazy
+import           Data.Snowchecked.Encoding.ByteString.Lazy ()
 import           Data.Snowchecked.Encoding.Class
 
 instance IsFlake ByteString where

@@ -20,8 +20,7 @@ integerToBS :: Integer -> ByteString
 integerToBS = pack . mkBytes
 	where
 		mkBytes 0 = mempty
-		mkBytes n
-			= fromIntegral n
+		mkBytes n = fromIntegral n
 			: mkBytes (n `shiftR` 8)
 {-# INLINE integerToBS #-}
 
@@ -29,7 +28,7 @@ bsToInteger :: ByteString -> Integer
 bsToInteger = foldr mkInteger 0
 	where
 		mkInteger :: Word8 -> Integer -> Integer
-		mkInteger nxt memo = memo `shiftL` 8 .|. toInteger nxt
+		mkInteger nxt memo = (memo `shiftL` 8) .|. toInteger nxt
 {-# INLINE bsToInteger #-}
 
 instance IsFlake ByteString where

@@ -13,8 +13,9 @@ tests = checkParallel $$(discover)
 
 prop_flakeToIntegerToFlake :: Property
 prop_flakeToIntegerToFlake = property $ do
-		cfg <- forAll genConfig
-		flake <- forAllFlake' cfg
-		let value = fromFlake @Integer flake
-		let result = parseFlake cfg value 
-		result === Just flake
+    cfg <- forAll genConfig
+    flake <- forAllFlake' cfg
+    let value = fromFlake @Integer flake
+    annotateShow value
+    let result = parseFlake cfg value 
+    result === Just flake
