@@ -47,9 +47,8 @@ forAllFlake :: (MonadIO m) => PropertyT m Flake
 forAllFlake = forAll genConfig >>= forAllFlake'
 
 forAllFlake' :: (MonadIO m) => SnowcheckedConfig -> PropertyT m Flake
-forAllFlake' cfg = do
-	nodeId <- forAll genWord256
-	newSnowcheckedGen cfg nodeId >>= nextFlake
+forAllFlake' cfg =
+	forAll genWord256 >>= newSnowcheckedGen cfg >>= nextFlake
 
 annotateFlakeString :: (MonadTest m) => Flake -> m ()
 annotateFlakeString = annotateShow . fromFlake @(Base16 String)
