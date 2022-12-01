@@ -13,8 +13,7 @@ This extension is valuable because the checksum detects error on input. If you'r
 miscommunications, and other input issues.
 
 Like Snowflake, this algorithm uses some bits from the timestamp, some bits from a counter, and some bits of the node id.
-This algorithm extends Snowflake by also using some bits to store the checksum, which derives from the sum of the other
-parts.
+This algorithm extends Snowflake by also using some bits to store the checksum, which derives from the sum of the other parts. This algorithm also loosens the timeliness constraint of the ids by allowing the counter to "roll over" into the time bits.
 
 This implementation allows the number of bits in the id to range from 0 bits to 255^4 bits. The default configuration uses
 64 bits, with 40 bits used for time, 10 bits used for the counter, 8 bits used for the node id, and 6 bits for the checksum.
